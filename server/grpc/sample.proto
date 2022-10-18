@@ -1,0 +1,54 @@
+syntax = "proto3";
+option go_package = "github.com/rzeAkbari/observabilityGo";
+service RouteGuide {
+//Grpc let's us define four kinds of service method
+  //A simple RPC where the client sends a request to the server using the stub and waits for a response to come back,
+  //just like a normal function call.
+  rpc GetFeature(Point) returns (Feature) {}
+  //A server-side streaming RPC where the client sends a request to the server and gets a stream to read a sequence of messages back
+  rpc ListFeatures(Rectangle) returns (stream Feature) {}
+
+  rpc RecordRouts(stream Point) returns (RouteSummary) {}
+
+  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+}
+
+message Point{
+  int32 latitude = 1;
+  int32 longitude = 2;
+}
+
+message Rectangle{
+  Point lo = 1;
+  Point hi = 2;
+}
+
+message Feature{
+  string name = 1;
+  Point point = 2;
+}
+
+// A RouteNote is a message sent while at a given point.
+message RouteNote {
+  Point location = 1;
+  string message = 2;
+}
+
+// A RouteSummary is received in response to a RecordRoute rpc.
+//
+// It contains the number of individual points received, the number of
+// detected features, and the total distance covered as the cumulative sum of
+// the distance between each point.
+message RouteSummary {
+  // The number of points received.
+  int32 point_count = 1;
+
+  // The number of known features passed while traversing the route.
+  int32 feature_count = 2;
+
+  // The distance covered in metres.
+  int32 distance = 3;
+
+  // The duration of the traversal in seconds.
+  int32 elapsed_time = 4;
+}
